@@ -21,10 +21,16 @@ public class Particle {
     }
 
     public Color color() {
-        if (flavor == ParticleFlavor.EMPTY) {
-            return Color.BLACK;
-        }
-        return Color.GRAY;
+        return switch (flavor) {
+            case ParticleFlavor.EMPTY    -> Color.BLACK;
+            case ParticleFlavor.SAND     -> Color.YELLOW;
+            case ParticleFlavor.BARRIER  -> Color.GRAY;
+            case ParticleFlavor.WATER    -> Color.BLUE;
+            case ParticleFlavor.FOUNTAIN -> Color.CYAN;
+            case ParticleFlavor.PLANT    -> new Color(0, 255, 0);
+            case ParticleFlavor.FIRE     -> new Color(255, 0, 0);
+            case ParticleFlavor.FLOWER   -> new Color(255, 141, 161);
+        };
     }
 
     public void moveInto(Particle other) {
