@@ -17,7 +17,13 @@ public class Particle {
 
     public Particle(ParticleFlavor flavor) {
         this.flavor = flavor;
-        lifespan = -1;
+        if (flavor == ParticleFlavor.FLOWER ||
+                flavor == ParticleFlavor.PLANT ||
+                flavor == ParticleFlavor.FIRE) {
+            lifespan = LIFESPANS.get(flavor);
+        } else {
+            lifespan = -1;
+        }
     }
 
     public Color color() {
@@ -27,9 +33,23 @@ public class Particle {
             case ParticleFlavor.BARRIER  -> Color.GRAY;
             case ParticleFlavor.WATER    -> Color.BLUE;
             case ParticleFlavor.FOUNTAIN -> Color.CYAN;
-            case ParticleFlavor.PLANT    -> new Color(0, 255, 0);
-            case ParticleFlavor.FIRE     -> new Color(255, 0, 0);
-            case ParticleFlavor.FLOWER   -> new Color(255, 141, 161);
+            case ParticleFlavor.PLANT    -> {
+                double ratio = (double) Math.max(0, Math.min(lifespan, PLANT_LIFESPAN)) / PLANT_LIFESPAN;
+                int g = 120 + (int) Math.round((255 - 120) * ratio);
+                yield new Color(0, g, 0);
+            }
+            case ParticleFlavor.FIRE     -> {
+                double ratio = (double) Math.max(0, Math.min(lifespan, FIRE_LIFESPAN)) / FIRE_LIFESPAN;
+                int r = (int) Math.round(255 * ratio);
+                yield new Color(r, 0, 0);
+            }
+            case ParticleFlavor.FLOWER   -> {
+                double ratio = (double) Math.max(0, Math.min(lifespan, FLOWER_LIFESPAN)) / FLOWER_LIFESPAN;
+                int r = 120 + (int) Math.round((255 - 120) * ratio);
+                int g = 70 + (int) Math.round((141 - 70) * ratio);
+                int b = 80 + (int) Math.round((161 - 80) * ratio);
+                yield new Color(r, g, b);
+            }
         };
     }
 
@@ -70,27 +90,37 @@ public class Particle {
                 Particle upNeighbor = neighbors.get(Direction.UP);
                 if (upNeighbor.flavor == ParticleFlavor.EMPTY) {
                     upNeighbor.flavor = flavor;
-                    upNeighbor.lifespan = lifespan;
+                    upNeighbor.lifespan = LIFESPANS.get(flavor);
                 }
             }
             case 1 -> {
                 Particle leftNeighbor = neighbors.get(Direction.LEFT);
                 if (leftNeighbor.flavor == ParticleFlavor.EMPTY) {
                     leftNeighbor.flavor = flavor;
-                    leftNeighbor.lifespan = lifespan;
+                    leftNeighbor.lifespan = LIFESPANS.get(flavor);
                 }
             }
             case 2 -> {
                 Particle rightNeighbor = neighbors.get(Direction.RIGHT);
                 if (rightNeighbor.flavor == ParticleFlavor.EMPTY) {
                     rightNeighbor.flavor = flavor;
-                    rightNeighbor.lifespan = lifespan;
+                    rightNeighbor.lifespan = LIFESPANS.get(flavor);
                 }
             }
         }
     }
 
     public void burn(Map<Direction, Particle> neighbors) {
+    }
+
+    public void decrementLifespan() {
+        if (lifespan > 0) {
+            lifespan--;
+        }
+        if (lifespan == 0) {
+            flavor = ParticleFlavor.EMPTY;
+            lifespan = -1;
+        }
     }
 
     public void action(Map<Direction, Particle> neighbors) {
