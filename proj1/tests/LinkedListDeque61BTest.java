@@ -60,20 +60,25 @@ public class LinkedListDeque61BTest {
     @Test
     public void isEmptyAndSizeTest() {
          Deque61B<String> lld1 = new LinkedListDeque61B<>();
-
          assertThat(lld1.isEmpty()).isTrue();
          assertThat(lld1.size()).isEqualTo(0);
 
          lld1.addLast("Tokyo");
-
          assertThat(lld1.isEmpty()).isFalse();
          assertThat(lld1.size()).isEqualTo(1);
 
          lld1.addLast("Shanghai");
          lld1.addFirst("Berkeley");
-
          assertThat(lld1.isEmpty()).isFalse();
          assertThat(lld1.size()).isEqualTo(3);
+
+         lld1.removeFirst();
+         lld1.removeFirst();
+         lld1.removeFirst();
+         assertThat(lld1.size()).isEqualTo(0);
+
+         lld1.removeFirst();
+         assertThat(lld1.size()).isEqualTo(0);
     }
 
     @Test
@@ -126,15 +131,48 @@ public class LinkedListDeque61BTest {
         Deque61B<String> lld1 = new LinkedListDeque61B<>();
         assertThat(lld1.removeFirst()).isNull();
         assertThat(lld1.removeLast()).isNull();
+        assertThat(lld1.toList()).isEmpty();
 
-        lld1.addLast("Tokyo");
         lld1.addFirst("Paris");
-        lld1.addLast("Shanghai");
+        lld1.addLast("Tokyo");
         lld1.addFirst("Berkeley");
+        lld1.addLast("Shanghai");
 
         assertThat(lld1.removeFirst()).isEqualTo("Berkeley");
         assertThat(lld1.toList()).containsExactly("Paris", "Tokyo", "Shanghai").inOrder();
         assertThat(lld1.removeLast()).isEqualTo("Shanghai");
         assertThat(lld1.toList()).containsExactly("Paris", "Tokyo").inOrder();
+
+        // Check that removing the second to last element with removeFirst works.
+        assertThat(lld1.removeFirst()).isEqualTo("Paris");
+        assertThat(lld1.toList()).containsExactly("Tokyo");
+        // Check that removing the last element with removeFirst works.
+        assertThat(lld1.removeFirst()).isEqualTo("Tokyo");
+        assertThat(lld1.toList()).isEmpty();
+
+        lld1.addFirst("Kyoto");
+        lld1.addLast("Beijing");
+        // Check that removing the second to last element with removeLast works.
+        assertThat(lld1.removeLast()).isEqualTo("Beijing");
+        assertThat(lld1.toList()).containsExactly("Kyoto");
+        // Check that removing the last element with removeLast works.
+        assertThat(lld1.removeLast()).isEqualTo("Kyoto");
+        assertThat(lld1.toList()).isEmpty();
+    }
+
+    @Test
+    public void addAfterRemoveTest() {
+        Deque61B<Integer> lld1 = new LinkedListDeque61B<>();
+        lld1.addFirst(3);
+        lld1.addLast(2);
+        lld1.removeFirst();
+        lld1.removeLast();
+
+        lld1.addFirst(5);
+        assertThat(lld1.getFirst()).isEqualTo(5);
+
+        lld1.removeFirst();
+        lld1.addLast(7);
+        assertThat(lld1.getLast()).isEqualTo(7);
     }
 }
