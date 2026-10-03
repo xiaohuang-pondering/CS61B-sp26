@@ -120,4 +120,21 @@ public class LinkedListDeque61BTest {
         assertThat(lld1.getRecursive(2)).isEqualTo(5);
         assertThat(lld1.getRecursive(999)).isNull();
     }
+
+    @Test
+    public void removeFirstAndRemoveLastTest() {
+        Deque61B<String> lld1 = new LinkedListDeque61B<>();
+        assertThat(lld1.removeFirst()).isNull();
+        assertThat(lld1.removeLast()).isNull();
+
+        lld1.addLast("Tokyo");
+        lld1.addFirst("Paris");
+        lld1.addLast("Shanghai");
+        lld1.addFirst("Berkeley");
+
+        assertThat(lld1.removeFirst()).isEqualTo("Berkeley");
+        assertThat(lld1.toList()).containsExactly("Paris", "Tokyo", "Shanghai").inOrder();
+        assertThat(lld1.removeLast()).isEqualTo("Shanghai");
+        assertThat(lld1.toList()).containsExactly("Paris", "Tokyo").inOrder();
+    }
 }
