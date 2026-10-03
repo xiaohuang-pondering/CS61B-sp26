@@ -90,7 +90,7 @@ public class LinkedListDeque61B<T> implements Deque61B<T> {
      */
     @Override
     public T getFirst() {
-        return null;
+        return sentinel.next.item;
     }
 
     /**
@@ -100,7 +100,7 @@ public class LinkedListDeque61B<T> implements Deque61B<T> {
      */
     @Override
     public T getLast() {
-        return null;
+        return sentinel.prev.item;
     }
 
     /**
@@ -134,7 +134,15 @@ public class LinkedListDeque61B<T> implements Deque61B<T> {
      */
     @Override
     public T get(int index) {
-        return null;
+        if (index < 0 || index >= size) {
+            return null;
+        }
+
+        Node current = sentinel.next;
+        for (int i = 0; i < index; i++) {
+            current = current.next;
+        }
+        return current.item;
     }
 
     /**
@@ -147,7 +155,17 @@ public class LinkedListDeque61B<T> implements Deque61B<T> {
      */
     @Override
     public T getRecursive(int index) {
-        return null;
+        if (index < 0 || index >= size) {
+            return null;
+        }
+        return getRecursive(index, sentinel.next);
+    }
+
+    private T getRecursive(int index, Node p){
+        if (index == 0) {
+            return p.item;
+        }
+        return getRecursive(index - 1, p.next);
     }
 
     public static void main(String[] args) {

@@ -75,4 +75,49 @@ public class LinkedListDeque61BTest {
          assertThat(lld1.isEmpty()).isFalse();
          assertThat(lld1.size()).isEqualTo(3);
     }
+
+    @Test
+    public void getFirstAndGetLastTest() {
+        Deque61B<String> lld1 = new LinkedListDeque61B<>();
+
+        assertThat(lld1.getFirst()).isNull();
+        assertThat(lld1.getLast()).isNull();
+
+        lld1.addLast("Tokyo");
+        lld1.addLast("Shanghai");
+        lld1.addFirst("Berkeley");
+
+        assertThat(lld1.getFirst()).isEqualTo("Berkeley");
+        assertThat(lld1.getLast()).isEqualTo("Shanghai");
+    }
+
+    @Test
+    public void getTest() {
+         Deque61B<Integer> lld1 = new LinkedListDeque61B<>();
+         assertThat(lld1.get(-10)).isNull();
+         assertThat(lld1.get(0)).isNull();
+
+         lld1.addLast(2);
+         lld1.addFirst(3);
+         lld1.addLast(5);
+
+         assertThat(lld1.get(1)).isEqualTo(2);
+         assertThat(lld1.get(2)).isEqualTo(5);
+         assertThat(lld1.get(999)).isNull();
+    }
+
+    @Test
+    public void getRecursiveTest() {
+        Deque61B<Integer> lld1 = new LinkedListDeque61B<>();
+        assertThat(lld1.getRecursive(-10)).isNull();
+        assertThat(lld1.getRecursive(0)).isNull();
+
+        lld1.addLast(2);
+        lld1.addFirst(3);
+        lld1.addLast(5);
+
+        assertThat(lld1.getRecursive(1)).isEqualTo(2);
+        assertThat(lld1.getRecursive(2)).isEqualTo(5);
+        assertThat(lld1.getRecursive(999)).isNull();
+    }
 }
