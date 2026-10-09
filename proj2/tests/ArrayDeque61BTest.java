@@ -120,4 +120,28 @@ public class ArrayDeque61BTest {
         ad1.addLast(7);
         assertThat(ad1.getLast()).isEqualTo(7);
     }
+
+    @Test
+    public void resizeTest() {
+        Deque61B<Integer> ad1 = new ArrayDeque61B<>();
+        for (int i = 11; i >= 0; i--) {
+            ad1.addFirst(i);
+        }
+        assertThat(ad1.toList()).containsExactly(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11).inOrder();
+
+        for (int i = 0; i < 12; i++) {
+            ad1.removeFirst();
+        }
+        assertThat(ad1.toList()).isEmpty();
+
+        for (int i = 0; i < 12; i++) {
+            ad1.addLast(i);
+        }
+        assertThat(ad1.toList()).containsExactly(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11).inOrder();
+
+        for (int i = 0; i < 12; i++) {
+            ad1.removeLast();
+        }
+        assertThat(ad1.toList()).isEmpty();
+    }
 }

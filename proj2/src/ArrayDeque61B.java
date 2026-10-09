@@ -23,15 +23,18 @@ public class ArrayDeque61B<T> implements Deque61B<T> {
      */
     @Override
     public void addFirst(T x) {
+        if (size == items.length) {
+            resizeUp();
+        }
+
         items[nextFirst] = x;
+        size += 1;
 
         if (nextFirst == 0) {
             nextFirst = lastPos;
         } else {
             nextFirst -= 1;
         }
-
-        size += 1;
     }
 
     /**
@@ -41,15 +44,18 @@ public class ArrayDeque61B<T> implements Deque61B<T> {
      */
     @Override
     public void addLast(T x) {
+        if (size == items.length) {
+            resizeUp();
+        }
+
         items[nextLast] = x;
+        size += 1;
 
         if (nextLast == lastPos) {
             nextLast = 0;
         } else {
             nextLast += 1;
         }
-
-        size += 1;
     }
 
     /**
@@ -125,6 +131,10 @@ public class ArrayDeque61B<T> implements Deque61B<T> {
         nextFirst = firstIndex;
         size -= 1;
 
+        if (items.length > 15 && (double) size / items.length <= 0.25) {
+            resizeDown();
+        }
+
         return firstItem;
     }
 
@@ -145,6 +155,10 @@ public class ArrayDeque61B<T> implements Deque61B<T> {
 
         nextLast = lastIndex;
         size -= 1;
+
+        if (items.length > 15 && (double) size / items.length <= 0.25) {
+            resizeDown();
+        }
 
         return lastItem;
     }
@@ -179,7 +193,6 @@ public class ArrayDeque61B<T> implements Deque61B<T> {
         throw new UnsupportedOperationException("No need to implement getRecursive for ArrayDeque61B.");
     }
 
-
     /**
      * Returns index of the {@code i}th item. Assumes {@code i} is smaller than {@code size}.
      */
@@ -190,5 +203,29 @@ public class ArrayDeque61B<T> implements Deque61B<T> {
         } else {
             return uncheckedRes;
         }
+    }
+
+    private void resizeUp() {
+        T[] newArray = (T[]) new Object[2 * items.length];
+        for (int i = 0; i < size; i++) {
+            newArray[i] = get(i);
+        }
+
+        items = newArray;
+        lastPos = newArray.length - 1;
+        nextFirst = lastPos;
+        nextLast = size;
+    }
+
+    private void resizeDown() {
+        T[] newArray = (T[]) new Object[items.length / 2];
+        for (int i = 0; i < size; i++) {
+            newArray[i] = get(i);
+        }
+
+        items = newArray;
+        lastPos = newArray.length - 1;
+        nextFirst = lastPos;
+        nextLast = size;
     }
 }
