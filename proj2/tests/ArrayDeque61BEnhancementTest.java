@@ -23,7 +23,7 @@ public class ArrayDeque61BEnhancementTest {
             ad2.addFirst(i);
         }
         List<Integer> l2 = new ArrayList<>();
-        for (int i : ad1) {
+        for (int i : ad2) {
             l2.add(i);
         }
         assertThat(l2).containsExactly(0, 1, 2, 3, 4, 5, 6, 7, 8, 9).inOrder();

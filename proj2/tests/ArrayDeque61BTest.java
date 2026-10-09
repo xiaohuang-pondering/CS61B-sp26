@@ -53,9 +53,11 @@ public class ArrayDeque61BTest {
         ad1.removeFirst();
         ad1.removeFirst();
         ad1.removeFirst();
+        assertThat(ad1.isEmpty()).isTrue();
         assertThat(ad1.size()).isEqualTo(0);
 
         ad1.removeFirst();
+        assertThat(ad1.isEmpty()).isTrue();
         assertThat(ad1.size()).isEqualTo(0);
     }
 

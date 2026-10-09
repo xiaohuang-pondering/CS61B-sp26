@@ -231,7 +231,7 @@ public class ArrayDeque61B<T> implements Deque61B<T> {
         if (this == o) {
             return true;
         }
-        if (o instanceof ArrayDeque61B otherDeque) {
+        if (o instanceof Deque61B otherDeque) {
             if (size != otherDeque.size()) {
                 return false;
             }
