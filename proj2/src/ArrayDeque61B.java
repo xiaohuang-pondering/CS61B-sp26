@@ -226,6 +226,40 @@ public class ArrayDeque61B<T> implements Deque61B<T> {
         throw new UnsupportedOperationException("No need to implement getRecursive for ArrayDeque61B.");
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o instanceof ArrayDeque61B otherDeque) {
+            if (size != otherDeque.size()) {
+                return false;
+            }
+            for (int i = 0; i< size; i++) {
+                if (!get(i).equals(otherDeque.get(i))) {
+                    return false;
+                }
+            }
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder returnSB = new StringBuilder("[");
+        for (int i = 0; i < size; i++) {
+            returnSB.append(get(i));
+            returnSB.append(", ");
+        }
+        // remove last comma and whitespace
+        if (size >= 1) {
+            returnSB.delete(returnSB.length() - 2, returnSB.length());
+        }
+        returnSB.append("]");
+        return returnSB.toString();
+    }
+
     /**
      * Returns index of the {@code i}th item. Assumes {@code i} is smaller than {@code size}.
      */
