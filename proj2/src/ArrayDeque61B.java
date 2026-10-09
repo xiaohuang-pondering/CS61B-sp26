@@ -1,7 +1,40 @@
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 public class ArrayDeque61B<T> implements Deque61B<T> {
+    private class ArrayDeque61BIterator implements Iterator<T> {
+        int pos;
+
+        ArrayDeque61BIterator() {
+            pos = 0;
+        }
+
+        /**
+         * Returns {@code true} if the iteration has more elements.
+         * (In other words, returns {@code true} if {@link #next} would
+         * return an element rather than throwing an exception.)
+         *
+         * @return {@code true} if the iteration has more elements
+         */
+        @Override
+        public boolean hasNext() {
+            return pos < size;
+        }
+
+        /**
+         * Returns the next element in the iteration.
+         *
+         * @return the next element in the iteration
+         */
+        @Override
+        public T next() {
+            T nextItem = items[calcRealIndex(pos)];
+            pos += 1;
+            return nextItem;
+        }
+    }
+
     private T[] items;
     private int size;
     private int nextFirst;
@@ -227,5 +260,15 @@ public class ArrayDeque61B<T> implements Deque61B<T> {
         lastPos = newArray.length - 1;
         nextFirst = lastPos;
         nextLast = size;
+    }
+
+    /**
+     * Returns an iterator over elements of type {@code T}.
+     *
+     * @return an Iterator.
+     */
+    @Override
+    public Iterator<T> iterator() {
+        return new ArrayDeque61BIterator();
     }
 }
