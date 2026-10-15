@@ -1,65 +1,53 @@
 import edu.princeton.cs.algs4.WeightedQuickUnionUF;
 
 public class Percolation {
-    private static class Site {
-        boolean isOpen;
-        boolean isFull;
-        boolean isConnectingBottom;
-    }
-
-    Site[] sites;
     WeightedQuickUnionUF connectStatus;
+    boolean[][] isOpen;
     int openSitesCount;
-    int size;
-    boolean isPercolate;
+    final int SIZE;
+    final int TOP;
+    final int BOTTOM;
 
     public Percolation(int N) {
         if (N < 0) {
             throw new IllegalArgumentException("Size of grid must be larger than 0.");
         }
-        sites = new Site[N * N];
-        for (int i = 0; i < N * N; i++) {
-            sites[i] = new Site();
-        }
-        connectStatus = new WeightedQuickUnionUF(N * N);
+
+        TOP = N * N;
+        BOTTOM = N * N + 1;
+        SIZE = N;
         openSitesCount = 0;
-        size = N;
+        isOpen = new boolean[N][N];
+        connectStatus = new WeightedQuickUnionUF(N * N + 2);
+        for (int i = 0; i < N; i++) {
+            connectStatus.union(i, TOP);
+            connectStatus.union(N * (N-1) + i, BOTTOM);
+        }
     }
 
     public void open(int row, int col) {
         validateIndicesAndThrow(row, col);
-        int curIdx = calcIndex(row, col);
-        if (sites[curIdx].isOpen) {
+
+        if (isOpen[row][col]) {
             return;
         }
-
-        sites[curIdx].isOpen = true;
-        if (row == 0) {
-            sites[curIdx].isFull = true;
-        }
-        if (row == size - 1) {
-            sites[curIdx].isConnectingBottom = true;
-        }
+        isOpen[row][col] = true;
         openSitesCount += 1;
 
+        int curIdx = xyTo2D(row, col);
         connectToNeighbor(curIdx, row, col - 1);
         connectToNeighbor(curIdx, row, col + 1);
         connectToNeighbor(curIdx, row - 1, col);
         connectToNeighbor(curIdx, row + 1, col);
-
-        if (isFull(row, col) && isConnectingBottom(row, col)) {
-            isPercolate = true;
-        }
     }
 
     public boolean isOpen(int row, int col) {
         validateIndicesAndThrow(row, col);
-        return sites[calcIndex(row, col)].isOpen;
+        return isOpen[row][col];
     }
 
     public boolean isFull(int row, int col) {
-        validateIndicesAndThrow(row, col);
-        return sites[connectStatus.find(calcIndex(row, col))].isFull;
+        return isOpen(row, col) && connectStatus.connected(TOP, xyTo2D(row, col));
     }
 
     public int numberOfOpenSites() {
@@ -67,16 +55,15 @@ public class Percolation {
     }
 
     public boolean percolates() {
-        return isPercolate;
+        return connectStatus.connected(TOP, BOTTOM);
     }
 
-    // Return the index where a site is stored in openStatus and connectStatus.
-    private int calcIndex(int row, int col) {
-        return size * col + row;
+    private int xyTo2D(int row, int col) {
+        return SIZE * row + col;
     }
 
     private boolean validateIndices(int row, int col) {
-        return row >= 0 && row < size && col >= 0 && col < size;
+        return row >= 0 && row < SIZE && col >= 0 && col < SIZE;
     }
 
     private void validateIndicesAndThrow(int row, int col) {
@@ -85,22 +72,9 @@ public class Percolation {
         }
     }
 
-    // Connect an open node to one of its four neighbors, maintaining their isFull and isConnectingBottom status.
     private void connectToNeighbor(int curIdx, int row, int col) {
-        if (validateIndices(row, col) && sites[calcIndex(row, col)].isOpen) {
-            int oldRootIdx = connectStatus.find(curIdx);
-            int neighborIdx = calcIndex(row, col);
-            int neighborRootIdx = connectStatus.find(neighborIdx);
-
-            connectStatus.union(oldRootIdx, neighborRootIdx);
-            int newRootIdx = connectStatus.find(curIdx);
-            sites[newRootIdx].isFull = sites[oldRootIdx].isFull || sites[neighborRootIdx].isFull;
-            sites[newRootIdx].isConnectingBottom =
-                    sites[oldRootIdx].isConnectingBottom || sites[neighborRootIdx].isConnectingBottom;
+        if (validateIndices(row, col) && isOpen[row][col]) {
+            connectStatus.union(curIdx, xyTo2D(row, col));
         }
-    }
-
-    private boolean isConnectingBottom(int row, int col) {
-        return sites[connectStatus.find(calcIndex(row, col))].isConnectingBottom;
     }
 }
