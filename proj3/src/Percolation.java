@@ -4,6 +4,7 @@ public class Percolation {
     private static class Site {
         boolean isOpen;
         boolean isFull;
+        boolean isConnectingBottom;
     }
 
     Site[] sites;
@@ -17,6 +18,9 @@ public class Percolation {
             throw new IllegalArgumentException("Size of grid must be larger than 0.");
         }
         sites = new Site[N * N];
+        for (int i = 0; i < N * N; i++) {
+            sites[i] = new Site();
+        }
         connectStatus = new WeightedQuickUnionUF(N * N);
         openSitesCount = 0;
         size = N;
@@ -30,8 +34,11 @@ public class Percolation {
         }
 
         sites[curIdx].isOpen = true;
-        if (col == 0) {
+        if (row == 0) {
             sites[curIdx].isFull = true;
+        }
+        if (row == size - 1) {
+            sites[curIdx].isConnectingBottom = true;
         }
         openSitesCount += 1;
 
@@ -40,7 +47,7 @@ public class Percolation {
         connectToNeighbor(curIdx, row - 1, col);
         connectToNeighbor(curIdx, row + 1, col);
 
-        if (col == size - 1 && isFull(row, col)) {
+        if (isFull(row, col) && isConnectingBottom(row, col)) {
             isPercolate = true;
         }
     }
@@ -69,7 +76,7 @@ public class Percolation {
     }
 
     private boolean validateIndices(int row, int col) {
-        return row > 0 && row < size && col >= 0 && col < size;
+        return row >= 0 && row < size && col >= 0 && col < size;
     }
 
     private void validateIndicesAndThrow(int row, int col) {
@@ -78,15 +85,22 @@ public class Percolation {
         }
     }
 
-    // Connect an open node to one of its four neighbors, maintaining their full status.
+    // Connect an open node to one of its four neighbors, maintaining their isFull and isConnectingBottom status.
     private void connectToNeighbor(int curIdx, int row, int col) {
-        if (validateIndices(row, col)) {
-            int curRootIdx = connectStatus.find(curIdx);
+        if (validateIndices(row, col) && sites[calcIndex(row, col)].isOpen) {
+            int oldRootIdx = connectStatus.find(curIdx);
             int neighborIdx = calcIndex(row, col);
             int neighborRootIdx = connectStatus.find(neighborIdx);
 
-            connectStatus.union(curRootIdx, neighborRootIdx);
-            sites[connectStatus.find(curIdx)].isFull = sites[curRootIdx].isFull || sites[neighborRootIdx].isFull;
+            connectStatus.union(oldRootIdx, neighborRootIdx);
+            int newRootIdx = connectStatus.find(curIdx);
+            sites[newRootIdx].isFull = sites[oldRootIdx].isFull || sites[neighborRootIdx].isFull;
+            sites[newRootIdx].isConnectingBottom =
+                    sites[oldRootIdx].isConnectingBottom || sites[neighborRootIdx].isConnectingBottom;
         }
+    }
+
+    private boolean isConnectingBottom(int row, int col) {
+        return sites[connectStatus.find(calcIndex(row, col))].isConnectingBottom;
     }
 }
