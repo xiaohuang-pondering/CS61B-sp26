@@ -1,7 +1,8 @@
 import edu.princeton.cs.algs4.WeightedQuickUnionUF;
 
 public class Percolation {
-    private WeightedQuickUnionUF connectStatus;
+    private WeightedQuickUnionUF percolateUF;
+    private WeightedQuickUnionUF fullUF;
     private boolean[][] isOpen;
     private int numberOfOpenSites;
     private final int SIZE;
@@ -18,10 +19,14 @@ public class Percolation {
         SIZE = N;
         numberOfOpenSites = 0;
         isOpen = new boolean[N][N];
-        connectStatus = new WeightedQuickUnionUF(N * N + 2);
+        percolateUF = new WeightedQuickUnionUF(N * N + 2);
         for (int i = 0; i < N; i++) {
-            connectStatus.union(i, TOP);
-            connectStatus.union(N * (N-1) + i, BOTTOM);
+            percolateUF.union(i, TOP);
+            percolateUF.union(N * (N-1) + i, BOTTOM);
+        }
+        fullUF = new WeightedQuickUnionUF(N * N + 1);
+        for (int i = 0; i < N; i++) {
+            fullUF.union(i, TOP);
         }
     }
 
@@ -47,7 +52,7 @@ public class Percolation {
     }
 
     public boolean isFull(int row, int col) {
-        return isOpen(row, col) && connectStatus.connected(TOP, xyTo2D(row, col));
+        return isOpen(row, col) && fullUF.connected(TOP, xyTo2D(row, col));
     }
 
     public int numberOfOpenSites() {
@@ -55,7 +60,10 @@ public class Percolation {
     }
 
     public boolean percolates() {
-        return connectStatus.connected(TOP, BOTTOM);
+        if (SIZE == 1) {
+            return isOpen(0, 0);
+        }
+        return percolateUF.connected(TOP, BOTTOM);
     }
 
     private int xyTo2D(int row, int col) {
@@ -74,7 +82,8 @@ public class Percolation {
 
     private void connectToNeighbor(int curIdx, int row, int col) {
         if (validateIndices(row, col) && isOpen[row][col]) {
-            connectStatus.union(curIdx, xyTo2D(row, col));
+            percolateUF.union(curIdx, xyTo2D(row, col));
+            fullUF.union(curIdx, xyTo2D(row, col));
         }
     }
 }
