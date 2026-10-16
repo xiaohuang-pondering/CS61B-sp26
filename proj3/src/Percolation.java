@@ -1,12 +1,12 @@
 import edu.princeton.cs.algs4.WeightedQuickUnionUF;
 
 public class Percolation {
-    WeightedQuickUnionUF connectStatus;
-    boolean[][] isOpen;
-    int openSitesCount;
-    final int SIZE;
-    final int TOP;
-    final int BOTTOM;
+    private WeightedQuickUnionUF connectStatus;
+    private boolean[][] isOpen;
+    private int numberOfOpenSites;
+    private final int SIZE;
+    private final int TOP;
+    private final int BOTTOM;
 
     public Percolation(int N) {
         if (N < 0) {
@@ -16,7 +16,7 @@ public class Percolation {
         TOP = N * N;
         BOTTOM = N * N + 1;
         SIZE = N;
-        openSitesCount = 0;
+        numberOfOpenSites = 0;
         isOpen = new boolean[N][N];
         connectStatus = new WeightedQuickUnionUF(N * N + 2);
         for (int i = 0; i < N; i++) {
@@ -32,7 +32,7 @@ public class Percolation {
             return;
         }
         isOpen[row][col] = true;
-        openSitesCount += 1;
+        numberOfOpenSites += 1;
 
         int curIdx = xyTo2D(row, col);
         connectToNeighbor(curIdx, row, col - 1);
@@ -51,7 +51,7 @@ public class Percolation {
     }
 
     public int numberOfOpenSites() {
-        return openSitesCount;
+        return numberOfOpenSites;
     }
 
     public boolean percolates() {

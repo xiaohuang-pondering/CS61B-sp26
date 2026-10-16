@@ -84,7 +84,7 @@ public class PercolationTest {
     public void anotherBasicTest() {
         int N = 4;
         Percolation p = new Percolation(N);
-        assertThat(p.openSitesCount).isEqualTo(0);
+        assertThat(p.numberOfOpenSites()).isEqualTo(0);
         assertThat(p.percolates()).isFalse();
 
         int[][] openSites = {
@@ -106,11 +106,14 @@ public class PercolationTest {
             p.open(site[0], site[1]);
         }
         assertThat(getState(N, p)).isEqualTo(expectedState);
-        assertThat(p.openSitesCount).isEqualTo(7);
+        assertThat(p.numberOfOpenSites()).isEqualTo(7);
         assertThat(p.percolates()).isFalse();
 
         p.open(3, 1);
         assertThat(p.percolates()).isTrue();
+
+        p.open(3, 1);
+        assertThat(p.numberOfOpenSites()).isEqualTo(8);
 
         p.open(1, 3);
         assertThat(p.percolates()).isTrue();
@@ -124,7 +127,7 @@ public class PercolationTest {
                 {Cell.CLOSED}
         };
         assertThat(getState(N, p)).isEqualTo(expectedState);
-        assertThat(p.openSitesCount).isEqualTo(0);
+        assertThat(p.numberOfOpenSites()).isEqualTo(0);
         assertThat(p.percolates()).isFalse();
     }
 

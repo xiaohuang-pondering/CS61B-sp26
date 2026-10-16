@@ -7,11 +7,11 @@ public class PercolationWithoutVirtualNodes {
         boolean isConnectingBottom;
     }
 
-    Site[] sites;
-    WeightedQuickUnionUF connectStatus;
-    int openSitesCount;
-    int size;
-    boolean isPercolate;
+    private Site[] sites;
+    private WeightedQuickUnionUF connectStatus;
+    private int openSitesCount;
+    private int size;
+    private boolean isPercolate;
 
     public PercolationWithoutVirtualNodes(int N) {
         if (N < 0) {
