@@ -81,8 +81,78 @@ public class PercolationTest {
     // TODO: Using the given tests above as a template,
     //       write some more tests and delete the fail() line
     @Test
-    public void yourFirstTestHere() {
-        fail("Did you write your own tests?");
+    public void anotherBasicTest() {
+        int N = 4;
+        Percolation p = new Percolation(N);
+        assertThat(p.openSitesCount).isEqualTo(0);
+        assertThat(p.percolates()).isFalse();
+
+        int[][] openSites = {
+                {0, 0},
+                {3, 0},
+                {2, 2},
+                {1, 0},
+                {1, 1},
+                {0, 2},
+                {2, 1},
+        };
+        Cell[][] expectedState = {
+                {Cell.FULL, Cell.CLOSED, Cell.FULL, Cell.CLOSED},
+                {Cell.FULL, Cell.FULL, Cell.CLOSED, Cell.CLOSED},
+                {Cell.CLOSED, Cell.FULL, Cell.FULL, Cell.CLOSED},
+                {Cell.OPEN, Cell.CLOSED, Cell.CLOSED, Cell.CLOSED}
+        };
+        for (int[] site : openSites) {
+            p.open(site[0], site[1]);
+        }
+        assertThat(getState(N, p)).isEqualTo(expectedState);
+        assertThat(p.openSitesCount).isEqualTo(7);
+        assertThat(p.percolates()).isFalse();
+
+        p.open(3, 1);
+        assertThat(p.percolates()).isTrue();
+
+        p.open(1, 3);
+        assertThat(p.percolates()).isTrue();
     }
 
+    @Test
+    public void anotherOneByOneTest() {
+        int N = 1;
+        Percolation p = new Percolation(N);
+        Cell[][] expectedState = {
+                {Cell.CLOSED}
+        };
+        assertThat(getState(N, p)).isEqualTo(expectedState);
+        assertThat(p.openSitesCount).isEqualTo(0);
+        assertThat(p.percolates()).isFalse();
+    }
+
+    @Test
+    public void backwashTest() {
+        int N = 3;
+        Percolation p = new Percolation(N);
+
+        int[][] openSites = {
+                {0, 0},
+                {1, 0},
+                {1, 1},
+                {2, 0},
+        };
+        Cell[][] expectedState = {
+                {Cell.FULL, Cell.CLOSED, Cell.CLOSED},
+                {Cell.FULL, Cell.FULL, Cell.CLOSED},
+                {Cell.FULL, Cell.CLOSED, Cell.CLOSED}
+        };
+        for (int[] site : openSites) {
+            p.open(site[0], site[1]);
+        }
+
+        assertThat(p.percolates()).isTrue();
+        assertThat(getState(N, p)).isEqualTo(expectedState);
+
+        p.open(2, 2);
+        assertThat(p.percolates()).isTrue();
+        assertThat(p.isFull(2, 2)).isFalse();
+    }
 }
