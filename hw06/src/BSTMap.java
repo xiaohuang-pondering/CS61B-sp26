@@ -13,8 +13,8 @@ public class BSTMap<K extends Comparable<K>, V> implements Map61B<K, V> {
         }
     }
 
-    BSTNode root;
-    int size;
+    private BSTNode root;
+    private int size;
 
     /**
      * Associates the specified value with the specified key in this map.
@@ -26,12 +26,7 @@ public class BSTMap<K extends Comparable<K>, V> implements Map61B<K, V> {
      */
     @Override
     public void put(K key, V value) {
-        if (root == null) {
-            root = new BSTNode(key, value);
-            size += 1;
-        } else {
-            put(key, value, root);
-        }
+        root = put(key, value, root);
     }
 
     /**
@@ -46,7 +41,7 @@ public class BSTMap<K extends Comparable<K>, V> implements Map61B<K, V> {
         if (target == null) {
             return null;
         }
-        return searchNode(key, root).value;
+        return target.value;
     }
 
     /**
@@ -83,7 +78,7 @@ public class BSTMap<K extends Comparable<K>, V> implements Map61B<K, V> {
     @Override
     public Set<K> keySet() {
         Set<K> keySet = new TreeSet<>();
-        addToKeySet(keySet, root);
+        toSet(keySet, root);
         return keySet;
     }
 
@@ -97,15 +92,12 @@ public class BSTMap<K extends Comparable<K>, V> implements Map61B<K, V> {
      */
     @Override
     public V remove(K key) {
-        V oldValue = get(key);
-        if (oldValue == null) {
+        BSTNode oldNode = searchNode(key, root);
+        if (oldNode == null) {
             return null;
         }
-        if (root.key.equals(key)) {
-            root = remove(key, root);
-        } else {
-            remove(key, root);
-        }
+        V oldValue = oldNode.value;
+        root = remove(key, root);
         size -= 1;
         return oldValue;
     }
@@ -122,81 +114,74 @@ public class BSTMap<K extends Comparable<K>, V> implements Map61B<K, V> {
         return keys.iterator();
     }
 
-    private BSTNode searchNode(K key, BSTNode root) {
-        if (root == null) {
+    private BSTNode searchNode(K key, BSTNode node) {
+        if (node == null) {
             return null;
-        } else if (key.compareTo(root.key) == 0) {
-            return root;
-        } else if (key.compareTo(root.key) < 0) {
-            return searchNode(key, root.left);
+        } else if (key.compareTo(node.key) == 0) {
+            return node;
+        } else if (key.compareTo(node.key) < 0) {
+            return searchNode(key, node.left);
         } else {
-            return searchNode(key, root.right);
+            return searchNode(key, node.right);
         }
     }
 
-    private BSTNode put(K key, V value, BSTNode root) {
-        if (root == null) {
+    private BSTNode put(K key, V value, BSTNode node) {
+        if (node == null) {
             size += 1;
             return new BSTNode(key, value);
         }
-
-        if (key.compareTo(root.key) == 0) {
-            root.value = value;
-        } else if (key.compareTo(root.key) < 0) {
-            root.left = put(key, value, root.left);
-        } else if (key.compareTo(root.key) > 0) {
-            root.right = put(key, value, root.right);
+        int cmp = key.compareTo(node.key);
+        if (cmp == 0) {
+            node.value = value;
+        } else if (cmp < 0) {
+            node.left = put(key, value, node.left);
+        } else {
+            node.right = put(key, value, node.right);
         }
-        return root;
+        return node;
     }
 
-    private BSTNode remove(K key, BSTNode root) {
-        if (key.compareTo(root.key) < 0) {
-            root.left = remove(key, root.left);
-            return root;
-        } else if (key.compareTo(root.key) > 0) {
-            root.right = remove(key, root.right);
-            return root;
-        } else {  // key.compareTo(root.key) == 0
-            if (root.left == null && root.right == null) {
-                return null;
-            } else if (root.left == null) {
-                return root.right;
-            } else if (root.right == null) {
-                return root.left;
+    private BSTNode remove (K key, BSTNode node) {
+        int cmp = key.compareTo(node.key);
+        if (cmp == 0) {
+            if (node.left == null) {
+                return node.right;
+            } else if (node.right == null) {
+                return node.left;
             } else {
-                BSTNode successor = findSuccessor(root);
-                remove(successor.key, root);
-                root.key = successor.key;
-                root.value = successor.value;
-                return root;
+                BSTNode successor = node.right;
+                while (successor.left != null) {
+                    successor = successor.left;
+                }
+                remove(successor.key, node);
+                node.key = successor.key;
+                node.value = successor.value;
+                return node;
             }
+        } else if (cmp < 0) {
+            node.left = remove(key, node.left);
+        } else {
+            node.right = remove(key, node.right);
         }
+        return node;
     }
 
-    private BSTNode findSuccessor(BSTNode root) {
-        root = root.right;
-        while (root.left != null) {
-            root = root.left;
-        }
-        return root;
-    }
-
-    private void addToKeySet(Set<K> keySet, BSTNode root) {
-        if (root == null) {
+    private void toSet(Set<K> keySet, BSTNode node) {
+        if (node == null) {
             return;
         }
-        keySet.add(root.key);
-        addToKeySet(keySet, root.left);
-        addToKeySet(keySet, root.right);
+        keySet.add(node.key);
+        toSet(keySet, node.left);
+        toSet(keySet, node.right);
     }
 
-    private void toList(BSTNode root, List<K> keys) {
-        if (root == null) {
+    private void toList(BSTNode node, List<K> keys) {
+        if (node == null) {
             return;
         }
-        toList(root.left, keys);
-        keys.add(root.key);
-        toList(root.right, keys);
+        toList(node.left, keys);
+        keys.add(node.key);
+        toList(node.right, keys);
     }
 }
