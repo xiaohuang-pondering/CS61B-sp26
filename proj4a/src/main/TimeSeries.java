@@ -31,6 +31,9 @@ public class TimeSeries extends TreeMap<Integer, Double> {
      * inclusive of both end points.
      */
     public TimeSeries(TimeSeries ts, int startYear, int endYear) {
+        if (ts == null) {
+            return;
+        }
         for (Map.Entry<Integer, Double> entry :
                 ts.subMap(startYear, true, endYear, true).entrySet()) {
             put(entry.getKey(), entry.getValue());
@@ -70,7 +73,7 @@ public class TimeSeries extends TreeMap<Integer, Double> {
      * should store the value from the TimeSeries that contains that year.
      */
     public TimeSeries plus(TimeSeries ts) {
-        TimeSeries total = new TimeSeries(this, 1400, 2100);
+        TimeSeries total = new TimeSeries(this, MIN_YEAR, MAX_YEAR);
         for (Map.Entry<Integer, Double> entry : ts.entrySet()) {
             int year = entry.getKey();
             Double data = total.get(year);
