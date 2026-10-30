@@ -28,8 +28,8 @@ public class PlotDemo {
         String s = Plotter.encodeChartAsString(chart);
         System.out.println(s);
 
-        // you can also do this to display locally:
-        // Plotter.displayChart(chart);
+         // you can also do this to display locally:
+         // Plotter.displayChart(chart);
 
     }
 }
